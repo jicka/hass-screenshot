@@ -165,25 +165,30 @@ var mqttClient = {};
   });
 })();
 
+
+// from : https://stackoverflow.com/questions/39538473/using-settimeout-on-promise-chain
+function delay(t, v) {
+    return new Promise(r => setTimeout(r, t, v));
+}
+
 async function mqttConnect() {
-  console.log(`Attempting to connect to mqtt://${config.mqttServer}`);
-  mqttClient = mqtt.connect(`mqtt://${config.mqttServer}`,{clientId:"hass-screenshot", username: config.mqttUser, password: config.mqttPassword});
+  console.log(`Attempting to connect to ${config.mqttProtocol}://${config.mqttServer}`);
+  mqttClient = mqtt.connect(`${config.mqttProtocol}://${config.mqttServer}`,{clientId:"hass-screenshot", username: config.mqttUser, password: config.mqttPassword});
   mqttClient.on("connect",function(connack){
     console.log("MQTT Connected!");
   });
   mqttClient.on("error",function(error){
     console.error("MQTT error:" + error);
-    new Promise(r => setTimeout(r, 60000)); //wait 1 minute
-    //process.exit(1);
-    mqttConnect();
+    return delay(60000).then(function() {
+        return mqttConnect();
+    });
   });
-  // not sure if this is needed
-  // mqttClient.on("disconnect",function(d){
-  //   console.error("MQTT disconnect:" + d);
-  //   new Promise(r => setTimeout(r, 60000)); //wait 1 minute
-  //   //process.exit(1);
-  //   mqttConnect();
-  // });
+   mqttClient.on("disconnect",function(d){
+     console.error("MQTT disconnect:" + d);
+     return delay(60000).then(function() {
+        return mqttConnect();
+     });
+   });
 }
 
 async function mqttSendState(state) {
