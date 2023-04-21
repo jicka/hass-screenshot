@@ -1,23 +1,55 @@
 version: "3.8"
 
 services:
-  app:
-    image: sibbl/hass-lovelace-kindle-screensaver:latest
+  hass-screenshot:
+    container_name: hass-screenshot
+    image: jicka/hass-screenshot-jicka
+    build:
+        context: .
+        dockerfile: Dockerfile
+    deploy:
+      resources:
+        limits:
+          memory: 1G
     environment:
-      - HA_BASE_URL=https://your-path-to-home-assistant:8123
-      - HA_SCREENSHOT_URL=/lovelace?kiosk
-      - HA_ACCESS_TOKEN=eyJ0...
-      - CRON_JOB=* * * * *
-      - RENDERING_TIMEOUT=30000
-      - RENDERING_DELAY=0
-      - RENDERING_SCREEN_HEIGHT=800
-      - RENDERING_SCREEN_WIDTH=600
-      - GRAYSCALE_DEPTH=8
-      - OUTPUT_PATH=/output/cover.png
+      - TZ=Europe/Berlin
+      - HA_BASE_URL=https://HOME_ASSISTANT_URL:8123
+      - HA_ACCESS_TOKEN=HOME_ASSISTANT_TOKEN
       - LANGUAGE=en
-      - ROTATION=0
-      - SCALING=1
+      - MQTT_SERVER=MQTT_SERVER_IP
+      - MQTT_USERNAME=MQTT_USER
+      - MQTT_PASSWORD=MQTT_USER_PASSWORD
+      - MQTT_SERVER=mqtt
+      - REAL_TIME=false
+      - CRON_JOB=*/5 * * * *
+      - RENDERING_DELAY=2
+      - COLOR_MODE=GrayScale
+      - USE_IMAGE_MAGICK=true
+        # image 1
+      - HA_SCREENSHOT_URL=/inkplate-dashboard/0?kiosk
+      - RENDERING_SCREEN_HEIGHT=825
+      - RENDERING_SCREEN_WIDTH=1200
+      - GRAYSCALE_DEPTH=3
+        # image 2
+#      - HA_SCREENSHOT_URL_2=/inkplate-dashboard/1?kiosk
+#      - RENDERING_SCREEN_HEIGHT_2=825
+#      - RENDERING_SCREEN_WIDTH_2=1200
+#      - GRAYSCALE_DEPTH_2=3
+        # image 3
+#      - HA_SCREENSHOT_URL_3=/inkplate-dashboard/2?kiosk
+#      - RENDERING_SCREEN_HEIGHT_3=825
+#      - RENDERING_SCREEN_WIDTH_3=1200
+#      - GRAYSCALE_DEPTH_3=3
+    restart: unless-stopped
     ports:
       - 5000:5000
-    volumes:
-      - ./output/:/output
+    healthcheck:
+      test: "wget --no-verbose --tries=1 --spider http://localhost:5000/ || exit 1"
+      interval: 900s
+      timeout: 10s
+      retries: 3
+      start_period: 120s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "3m"
