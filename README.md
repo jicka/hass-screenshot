@@ -1,4 +1,4 @@
-# Home Assistant Lovelace Kindle Screensaver
+# Home Assistant HomePlate Screenshot Daemon
 
 This is a fork of [lanrat/hass-screenshot](https://github.com/lanrat/hass-screenshot) which is a fork of the original [Home Assistant Lovelace Kindle Screensaver by sibbl](https://github.com/sibbl/hass-lovelace-kindle-screensaver). The example config adds [HomePlate](https://github.com/lanrat/homeplate) dimensions and contains an additional configuration to allow using mqtts. This version also contains a Dockerfile and docker-compose.yml to allow you to build the container yourself.
 
