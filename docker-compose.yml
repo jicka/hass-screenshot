@@ -19,7 +19,7 @@ services:
       - MQTT_SERVER=MQTT_SERVER_IP
       - MQTT_USERNAME=MQTT_USER
       - MQTT_PASSWORD=MQTT_USER_PASSWORD
-      - MQTT_SERVER=mqtt
+      - MQTT_PROTOCOL=mqtt
       - REAL_TIME=false
       - CRON_JOB=*/5 * * * *
       - RENDERING_DELAY=2
